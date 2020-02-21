@@ -1,8 +1,8 @@
 import requests
 import settings
 
-bitlinks_url = 'https://api-ssl.bitly.com/v4/bitlinks'
-total_clicks_url = 'https://api-ssl.bitly.com/v4/bitlinks/{}/clicks/summary'
+BITLINKS_URL = 'https://api-ssl.bitly.com/v4/bitlinks'
+TOTAL_CLICKS_URL = 'https://api-ssl.bitly.com/v4/bitlinks/{}/clicks/summary'
 
 
 def get_shorten_link(token, url, user_url):
@@ -10,11 +10,11 @@ def get_shorten_link(token, url, user_url):
     headers = {'Authorization': token}
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
-    user_response = response.json()
-    return user_response['link']
+    shorten_link_response = response.json()
+    return shorten_link_response['link']
 
 
-def check_user_link(user_link):
+def get_user_link(user_link):
     if 'http' in user_link:
         link = user_link[6:]
     else:
@@ -23,7 +23,7 @@ def check_user_link(user_link):
 
 
 def get_count_clicks(token, url, user_link):
-    link_for_check = check_user_link(user_link)
+    link_for_check = get_user_link(user_link)
     headers = {'Authorization': token}
     params = {'unit_reference': ''}
     response = requests.get(
@@ -41,7 +41,7 @@ def check_user_input(url):
         try:
             clicks_count = get_count_clicks(
                 settings.TOKEN,
-                total_clicks_url,
+                TOTAL_CLICKS_URL,
                 url
             )
             print('Количество переходов по ссылке за всё время', clicks_count)
@@ -49,7 +49,7 @@ def check_user_input(url):
             print('Введен неверный битлинк')
     else:
         try:
-            user_bitlink = get_shorten_link(settings.TOKEN, bitlinks_url, url)
+            user_bitlink = get_shorten_link(settings.TOKEN, BITLINKS_URL, url)
             print('Битлинк', user_bitlink)
         except requests.exceptions.HTTPError:
             print('Введен неверный url')
