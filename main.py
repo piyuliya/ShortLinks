@@ -1,5 +1,8 @@
 import requests
 import settings
+import sys
+import argparse
+
 
 BITLINKS_URL = 'https://api-ssl.bitly.com/v4/bitlinks'
 TOTAL_CLICKS_URL = 'https://api-ssl.bitly.com/v4/bitlinks/{}/clicks/summary'
@@ -55,6 +58,18 @@ def check_user_input(url):
             print('Введен неверный url')
 
 
+def createParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name', nargs='?')
+    return parser
+
+
 if __name__ == "__main__":
-    user_input = input('Введите ссылку: ')
-    check_user_input(user_input)
+    parser = createParser()
+    namespace = parser.parse_args()
+
+    if namespace.name:
+        check_user_input(namespace.name)
+    else:
+        user_input = input('Введите ссылку: ')
+        check_user_input(user_input)
